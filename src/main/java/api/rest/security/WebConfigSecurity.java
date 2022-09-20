@@ -3,6 +3,7 @@ package api.rest.security;
 import api.rest.services.ImplementacaoUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,6 +30,9 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter {
                 /*Ativar permissão para acesso a página inicial do sistema. Ex: sistema.com.br/ */
                 .disable().authorizeHttpRequests().antMatchers("/").permitAll()
                         .antMatchers("/index").permitAll()
+
+                //
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 /*URL de logout. Redireciona ao deslogar*/
                 .anyRequest().authenticated().and().logout().logoutSuccessUrl("/index")
