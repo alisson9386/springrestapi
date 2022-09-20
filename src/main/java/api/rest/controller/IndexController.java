@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +22,7 @@ import api.rest.model.Usuario;
 import api.rest.repository.TelefoneRepository;
 import api.rest.repository.UsuarioRepository;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/usuario")
 public class IndexController {
@@ -36,9 +38,17 @@ public class IndexController {
 		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/{id}", produces = "application/json")
-	public ResponseEntity<Usuario> init(@PathVariable(value = "id") Long id) {
+	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v1")
+	public ResponseEntity<Usuario> init1(@PathVariable(value = "id") Long id) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		System.out.println("Versão 1");
+		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v2")
+	public ResponseEntity<Usuario> init2(@PathVariable(value = "id") Long id) {
+		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		System.out.println("Versão 2");
 		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
 	}
 	
@@ -53,6 +63,8 @@ public class IndexController {
 		for(int i = 0; i < usuario.getTelefones().size(); i++) {
 			usuario.getTelefones().get(i).setUsuario(usuario);
 		}
+		String passwordCrypt = new BCryptPasswordEncoder().encode(usuario.getSenha());
+		usuario.setSenha(passwordCrypt);
 		Usuario cadUser = usuarioRepository.save(usuario);
 		return new ResponseEntity<Usuario>(cadUser, HttpStatus.OK);
 	}
@@ -69,6 +81,13 @@ public class IndexController {
 		for(int i = 0; i < usuario.getTelefones().size(); i++) {
 			usuario.getTelefones().get(i).setUsuario(usuario);
 		}
+		Usuario userTemp = usuarioRepository.findUserByLogin(usuario.getLogin());
+
+		if(!userTemp.getSenha().equals(usuario.getSenha())){
+			String passwordCrypt = new BCryptPasswordEncoder().encode(usuario.getSenha());
+			usuario.setSenha(passwordCrypt);
+		}
+
 		Usuario atualizarUser = usuarioRepository.save(usuario);
 		return new ResponseEntity<Usuario>(atualizarUser, HttpStatus.OK);
 	}
