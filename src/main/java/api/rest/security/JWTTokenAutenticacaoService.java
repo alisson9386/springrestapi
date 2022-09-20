@@ -21,7 +21,7 @@ import java.util.Date;
 public class JWTTokenAutenticacaoService {
 
     //Tempo de validade do token
-    private static final long EXPIRATION_TIME = 20;
+    private static final long EXPIRATION_TIME = 172800000;
 
     //Senha unica para compor a autenticação
     private static final String SECRET = "zaq12wsxZAQ!@WSX";

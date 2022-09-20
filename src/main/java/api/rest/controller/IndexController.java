@@ -3,6 +3,7 @@ package api.rest.controller;
 import java.util.List;
 import java.util.Optional;
 
+import api.rest.model.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -36,18 +37,18 @@ public class IndexController {
 	private TelefoneRepository telefoneRepository;
 	
 	@GetMapping(value = "/{id}/codigovenda/{venda}", produces = "application/json")
-	public ResponseEntity<Usuario> relatorio(@PathVariable(value = "id") Long id, @PathVariable(value = "venda") Long venda) {
+	public ResponseEntity<UsuarioDTO> relatorio(@PathVariable(value = "id") Long id, @PathVariable(value = "venda") Long venda) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
-		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
+		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v1")
 	@CacheEvict(value = "cacheUser1", allEntries = true)
 	@CachePut("cacheUser1")
-	public ResponseEntity<Usuario> init1(@PathVariable(value = "id") Long id) {
+	public ResponseEntity<UsuarioDTO> init1(@PathVariable(value = "id") Long id) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		System.out.println("Versão 1");
-		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
+		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json", headers = "X-API-Version=v2")
